@@ -1,34 +1,27 @@
 const tableBodyObj = document.getElementById("tableBody");
 
-for (let i=0; i<5; i++) {
-  const newTrObj = document.createElement("tr");
+fetch("https://api.github.com/users/suly98")
+.then((response) => {return response.json();})
+.then((jsonRes) => {
+  Object.keys(jsonRes).forEach((attribName) => {
+    const newTrObj = document.createElement("tr");
 
-  const newDataCol1 = document.createElement("td");
-  newDataCol1.innerText = "Custom Attribute 1";
+    const newDataCol1 = document.createElement("td");
+    newDataCol1.innerText = attribName;
 
-  const newDataCol2 = document.createElement("td");
-  newDataCol2.innerText = "Attribute Value 1";
+    const newDataCol2 = document.createElement("td");
+    newDataCol2.innerText = jsonRes[attribName];
 
-  newTrObj.appendChild(newDataCol1);
-  newTrObj.appendChild(newDataCol2);
+    newTrObj.appendChild(newDataCol1);
+    newTrObj.appendChild(newDataCol2);
 
-  tableBodyObj.appendChild(newTrObj);
-}
+    tableBodyObj.appendChild(newTrObj);
+  });
+})
+.then(() => {console.log("I am done!");})
+.catch((errMsg) => {console.log(`Error Message: ${errMsg}.`);});
 
-const listOfAttrib = ["Custom Attribute 1", "Custom Attribute 2", "Custom Attribute 3"]
 
-listOfAttrib.forEach((attribName) => {
-  const newTrObj = document.createElement("tr");
 
-  const newDataCol1 = document.createElement("td");
-  newDataCol1.innerText = attribName;
 
-  const newDataCol2 = document.createElement("td");
-  newDataCol2.innerText = "Attribute Value 1";
-
-  newTrObj.appendChild(newDataCol1);
-  newTrObj.appendChild(newDataCol2);
-
-  tableBodyObj.appendChild(newTrObj);
-});
   
