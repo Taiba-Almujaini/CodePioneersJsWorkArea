@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>To-Do List</title>
+        <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+        <style>
+            body {
+                background-color: white;
+            }
+            .table {
+                margin-top: 20px;
+            }
+            .form-container {
+                margin-top: 20px;
+            }
+            .header {
+                background-color: orange;
+                color: white;
+                padding: 20px;
+                text-align: center;
+            }
+
+        </style>
+    </head>
+    <body>
+    <div class="header">
+        <h1>To-Do List</h1>
+        <div id="message"></div>
+    </div>
+    <div class="container">
+        <div class="table-responsive">
+            <table class="table table-bordered">
+                <thead class="thead-dark">
+                <tr>
+                    <th>ID</th>
+                    <th>Description</th>
+                </tr>
+                </thead>
+                <tbody id="todolist"></tbody>
+            </table>
+        </div>
+
+        <div class="form-container">
+            <form id="todoForm">
+                <div class="form-group">
+                    <label for="todoId">ID</label>
+                    <input type="text" class="form-control" id="todoId" required>
+                </div>
+                <div class="form-group">
+                    <label for="todoDesc">Description</label>
+                    <input type="text" class="form-control" id="todoDesc" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Add To-Do</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                fetch('http://localhost:8080/api/v1/todolist')
+                    .then(response => response.json())
+                    .then(data => {
+                        const todoList = document.getElementById('todolist');
+                        data.forEach(item => {
+                            const row = document.createElement('tr');
+                            row.innerHTML = `
+                                <td>${item.id}</td>
+                                <td>${item.desc}</td>
+                            `;
+                            todoList.appendChild(row);
+                        });
+                    })
+                    .catch(error => console.error('Error fetching data:', error));
+
+                document.getElementById('todoForm').addEventListener('submit', function(event) {
+                    event.preventDefault();
+                    const id = document.getElementById('todoId').value;
+                    const desc = document.getElementById('todoDesc').value;
+
+                    fetch('http://localhost:8080/api/v1/todolist', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ id, desc })
+                    })
+                    .then(response => {
+                        if (response.ok) {
+                            document.getElementById('message').innerText = 'Item added successfully!';
+                            document.getElementById('message').style.color = 'green';
+                            const newRow = document.createElement('tr');
+                            newRow.innerHTML = `
+                                <td>${id}</td>
+                                <td>${desc}</td>
+                            `;
+                            document.getElementById('todolist').appendChild(newRow);
+                        } else {
+                            document.getElementById('message').innerText = 'Failed to add item.';
+                            document.getElementById('message').style.color = 'red';
+                        }
+                    })
+                    .catch(error => {
+                        document.getElementById('message').innerText = 'Error adding item.';
+                        document.getElementById('message').style.color = 'red';
+                        console.error('Error:', error);
+                    });
+                });
+            });
+
+    </script>
+    </body>
+</html>
